@@ -17,6 +17,7 @@ public class NodeVisitor implements Visitor<Void> {
 
     @Override
     public Void visit(Int intt) {
+        printIndent(intt.getToken().getText());
         return null;
     }
 

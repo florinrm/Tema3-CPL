@@ -1,2 +1,19 @@
-Semantic error: No method main in class Main
-Compilation halted
+program
+  class
+    A
+    attribute
+      n
+      Int
+      0
+    attribute
+      s
+      String
+      abc
+    attribute
+      b
+      Bool
+      false
+    attribute
+      c
+      Bool
+      b

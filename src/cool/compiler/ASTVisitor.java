@@ -134,7 +134,7 @@ public class ASTVisitor extends CoolParserBaseVisitor<ASTNode> {
 
     @Override
     public ASTNode visitInt(CoolParser.IntContext ctx) {
-        return new Id(ctx.INT().getSymbol());
+        return new Int(ctx.INT().getSymbol());
     }
 
     @Override

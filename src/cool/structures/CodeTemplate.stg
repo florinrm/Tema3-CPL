@@ -1,0 +1,42 @@
+program(data, textFuncs, textMain) ::= <<
+.data
+<data>
+
+.text
+<textFuncs>
+
+main:
+<textMain>
+	li $v0, 10
+	syscall		#exit
+>>
+
+literal(value) ::= <<
+	li $a0 <value>
+>>
+
+class(super_class) ::= <<
+addiu   $sp $sp -12
+sw      $fp 12($sp)
+sw      $s0 8($sp)
+sw      $ra 4($sp)
+addiu   $fp $sp 4
+move    $s0 $a0
+jal     <super_class>
+move    $a0 $s0
+lw      $fp 12($sp)
+lw      $s0 8($sp)
+lw      $ra 4($sp)
+addiu   $sp $sp 12
+jr      $ra
+>>
+
+plus(e1, e2) ::= <<
+<e1>
+sw $a0 0($sp)
+addiu $sp $sp -4
+<e2>
+lw $t1 4($sp)
+add $a0 $t1 $a0
+addiu $sp $sp 4
+>>

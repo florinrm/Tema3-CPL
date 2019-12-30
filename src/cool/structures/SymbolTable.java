@@ -56,8 +56,11 @@ public class SymbolTable {
     }
 
     public static void error(String line, String str) {
+
         String message = "\"" + Compiler.currentFile.split("\\\\")[2]
                 + "\", line " + line + ", Semantic error:" + str;
+
+        //String message = "line " + line + ", Semantic error:" + str;
         
         System.err.println(message);
         

@@ -1,2 +1,6 @@
-Semantic error: No method main in class Main
-Compilation halted
+program
+  class
+    A
+  class
+    B
+    A

@@ -784,15 +784,17 @@ public class ResolutionPassVisitor implements Visitor<TypeSymbol> {
         if (type != null && retType != null) {
             if (TypeSymbol.isPrimitive(type) && TypeSymbol.isPrimitive(retType)) {
                 // un mic hack ca imi bag pula in ea de tema, AM SI EU VACANTA MEA
-                if (!type.equals(retType) && !(retType.equals(TypeSymbol.INT) && type.equals(TypeSymbol.OBJECT))) {
-                    // Type B of the body of method j is incompatible with declared return type C
-                    // AICI INTRA MORTII MA-SII -> rezolvat
-                    SymbolTable.error(token.getLine()
-                                    + ":" + (token.getCharPositionInLine() + 1),
-                            " Type " + type + " of the body of method "
-                                    + func.getNameToken().getText()
-                                    + " is incompatible with declared return type " + retType);
-                    return null;
+                if (!retType.equals(TypeSymbol.OBJECT)) {
+                    if (!type.equals(retType) && !(retType.equals(TypeSymbol.INT) && type.equals(TypeSymbol.OBJECT))) {
+                        // Type B of the body of method j is incompatible with declared return type C
+                        // AICI INTRA MORTII MA-SII -> rezolvat
+                        SymbolTable.error(token.getLine()
+                                        + ":" + (token.getCharPositionInLine() + 1),
+                                " Type " + type + " of the body of method "
+                                        + func.getNameToken().getText()
+                                        + " is incompatible with declared return type " + retType);
+                        return null;
+                    }
                 }
             }
 

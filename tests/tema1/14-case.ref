@@ -1,2 +1,23 @@
-Semantic error: No method main in class Main
-Compilation halted
+program
+  class
+    A
+    method
+      f
+      formal
+        x
+        Object
+      String
+      case
+        x
+        case branch
+          s
+          String
+          String
+        case branch
+          i
+          Int
+          Int
+        case branch
+          o
+          Object
+          Oops

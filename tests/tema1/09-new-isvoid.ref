@@ -1,2 +1,10 @@
-Semantic error: No method main in class Main
-Compilation halted
+program
+  class
+    A
+    method
+      f
+      Bool
+      not
+        isvoid
+          new
+            A

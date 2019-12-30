@@ -7,4 +7,11 @@
 "01-define-class.cl", line 13:7, Semantic error: Inheritance cycle for class E
 "01-define-class.cl", line 14:7, Semantic error: Inheritance cycle for class F
 "01-define-class.cl", line 15:7, Semantic error: Inheritance cycle for class G
-Compilation halted
+Exception in thread "main" java.lang.ExceptionInInitializerError
+	at cool.compiler.Compiler.main(Compiler.java:160)
+	at cool.tester.Tester2.main(Tester2.java:31)
+Caused by: java.lang.IllegalArgumentException: No such group file: CodeTemplate.stg
+	at org.stringtemplate.v4.STGroupFile.<init>(STGroupFile.java:79)
+	at org.stringtemplate.v4.STGroupFile.<init>(STGroupFile.java:58)
+	at cool.structures.CodeGenVisitor.<clinit>(CodeGenVisitor.java:8)
+	... 2 more

@@ -2,10 +2,7 @@ package cool.compiler;
 
 import cool.lexer.CoolLexer;
 import cool.parser.CoolParser;
-import cool.structures.DefinitionPassVisitor;
-import cool.structures.FindTypesVisitor;
-import cool.structures.ResolutionPassVisitor;
-import cool.structures.SymbolTable;
+import cool.structures.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
@@ -129,7 +126,7 @@ public class Compiler {
             var printTree = new NodeVisitor();
 
             var ast = astVisitor.visit(tree);
-            // ast.accept(printTree);
+            //ast.accept(printTree);
 
             var definitionPassVisitor = new DefinitionPassVisitor();
             var findTypesVisitor = new FindTypesVisitor();
@@ -159,6 +156,10 @@ public class Compiler {
 
 
             ast.accept(resolutionPassVisitor);
+
+            var codeGenVisitor = new CodeGenVisitor();
+            var codeGen = ast.accept(codeGenVisitor);
+            System.out.println(codeGen.render());
 
             SymbolTable.classesAndMethods.clear();
             SymbolTable.classesAndVariables.clear();

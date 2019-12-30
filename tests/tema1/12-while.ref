@@ -1,2 +1,18 @@
-Semantic error: No method main in class Main
-Compilation halted
+program
+  class
+    A
+    method
+      f
+      formal
+        x
+        Int
+      Object
+      while
+        <
+          0
+          x
+        <-
+          x
+          -
+            x
+            1

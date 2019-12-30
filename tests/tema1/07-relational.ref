@@ -1,2 +1,23 @@
-Semantic error: No method main in class Main
-Compilation halted
+program
+  class
+    A
+    attribute
+      n
+      Int
+    attribute
+      b
+      Bool
+      not
+        <=
+          2
+          n
+    attribute
+      c
+      Bool
+      =
+        <
+          2
+          +
+            n
+            1
+        false

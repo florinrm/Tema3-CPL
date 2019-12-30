@@ -1,3 +1,29 @@
-"08-assignment.cl", line 8:5, Semantic error: Class A redefines method f
-Semantic error: No method main in class Main
-Compilation halted
+program
+  class
+    A
+    attribute
+      x
+      Int
+    method
+      f
+      formal
+        y
+        Int
+      Int
+      <-
+        x
+        y
+    method
+      f
+      formal
+        y
+        Int
+      formal
+        z
+        Int
+      Int
+      <-
+        x
+        <-
+          y
+          z

@@ -1,2 +1,12 @@
-Semantic error: No method main in class Main
-Compilation halted
+program
+  class
+    A
+    attribute
+      x
+      SELF_TYPE
+  class
+    B
+    A
+    attribute
+      y
+      Int
