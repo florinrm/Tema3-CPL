@@ -1,34 +1,107 @@
+sequence(e) ::= "<e; separator=\"\n\">"
+sequenceSpaced(e) ::= "<e; separator=\"\n\n\">"
+
 program(data, textFuncs, textMain) ::= <<
-.data
+    .data
+    .align  2
+    .globl  class_nameTab
+    .globl  Int_protObj
+    .globl  String_protObj
+    .globl  bool_const0
+    .globl  bool_const1
+    .globl  Main_protObj
+    .globl  _int_tag
+    .globl  _string_tag
+    .globl  _bool_tag
 <data>
 
-.text
 <textFuncs>
 
-main:
+    .globl  heap_start
+heap_start:
+    .word   0
+    .text
+    .globl  Int_init
+    .globl  String_init
+    .globl  Bool_init
+    .globl  Main_init
+    .globl  Main.main
 <textMain>
-	li $v0, 10
-	syscall		#exit
 >>
 
-literal(value) ::= <<
-	li $a0 <value>
+literal(val) ::= <<
+	li $a0 <val>
 >>
 
-class(super_class) ::= <<
-addiu   $sp $sp -12
-sw      $fp 12($sp)
-sw      $s0 8($sp)
-sw      $ra 4($sp)
-addiu   $fp $sp 4
-move    $s0 $a0
-jal     <super_class>
-move    $a0 $s0
-lw      $fp 12($sp)
-lw      $s0 8($sp)
-lw      $ra 4($sp)
-addiu   $sp $sp 12
-jr      $ra
+header(val1, val2, val3) ::= <<
+_int_tag:
+    .word   <val1>
+_string_tag:
+    .word   <val2>
+_bool_tag:
+    .word   <val3>
+>>
+
+stringConstant(val, label, len, size, index) ::= <<
+<label>:
+    .word   <index>
+    .word   <size>
+    .word   String_dispTab
+    .word   <len>
+    .asciiz <val>
+    .align  2
+>>
+
+intConstant(val, label, index) ::= <<
+<label>:
+    .word   <index>
+    .word   4
+    .word   Int_dispTab
+    .word   <val>
+>>
+
+boolConstant(val, label, index) ::= <<
+<label>:
+    .word   <index>
+    .word   4
+    .word   Bool_dispTab
+    .word   <val>
+>>
+
+classesTable(args) ::= <<
+class_nameTab:
+<args :
+    {tag |
+    .word <tag>
+}>
+>>
+
+initClasses(args) ::= <<
+class_objTab:
+<args :
+    {tag |
+    .word <tag>
+}>
+>>
+
+class(class_label, super_class) ::= <<
+<class_label>:
+    addiu   $sp $sp -12
+    sw      $fp 12($sp)
+    sw      $s0 8($sp)
+    sw      $ra 4($sp)
+    addiu   $fp $sp 4
+    move    $s0 $a0
+    <if(super_class)>
+    jal     <super_class>
+    <else>
+    <endif>
+    move    $a0 $s0
+    lw      $fp 12($sp)
+    lw      $s0 8($sp)
+    lw      $ra 4($sp)
+    addiu   $sp $sp 12
+    jr      $ra
 >>
 
 plus(e1, e2) ::= <<

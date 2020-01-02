@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class Compiler {
@@ -126,14 +127,78 @@ public class Compiler {
             var printTree = new NodeVisitor();
 
             var ast = astVisitor.visit(tree);
-            //ast.accept(printTree);
+            printTree.setPrint(false);
+
+            // populates classes and parents
+            // SymbolTable.classesAndParents.put("Object", null);
+            SymbolTable.classesAndParents.put("IO", "Object");
+            SymbolTable.classesAndParents.put("Int", "Object");
+            SymbolTable.classesAndParents.put("String", "Object");
+            SymbolTable.classesAndParents.put("Bool", "Object");
+
+            // indexes
+            Constants.classesAndIndexes.put("Object", 0);
+            Constants.classesAndIndexes.put("IO", 1);
+
+            var findTypesVisitor = new FindTypesVisitor();
+            ast.accept(findTypesVisitor);
+
+            Constants.addString("");
+            Constants.addString("Object");
+            // adding class names
+            for (var entry : SymbolTable.classesAndParents.entrySet()) {
+                Constants.addString(entry.getKey());
+            }
+
+            // adding strings
+            printTree.setAddStrings(true);
+            printTree.setAddIntegers(false);
+            ast.accept(printTree);
+
+            // adding strings lengths
+            for (var entry : Constants.stringValues.entrySet()) {
+                Constants.addInteger(entry.getKey().length());
+            }
+
+            // adding integers
+            printTree.setAddStrings(false);
+            printTree.setAddIntegers(true);
+            printTree.setPrint(false);
+            ast.accept(printTree);
 
             var definitionPassVisitor = new DefinitionPassVisitor();
-            var findTypesVisitor = new FindTypesVisitor();
             var resolutionPassVisitor = new ResolutionPassVisitor();
 
-            ast.accept(findTypesVisitor);
             ast.accept(definitionPassVisitor);
+
+            // add methods for predefined classes
+            // Object
+            SymbolTable.classesAndMethods.put("Object", new ArrayList<FuncDefNode>(List.of(
+                    new FuncDefNode(new FuncDefToken("abort"), new FuncDefToken("Object"), null, null),
+                    new FuncDefNode(new FuncDefToken("type_name"), new FuncDefToken("String"), null, null),
+                    new FuncDefNode(new FuncDefToken("copy"), new FuncDefToken("SELF_TYPE"), null, null)
+            )));
+
+            // IO
+            SymbolTable.classesAndMethods.put("IO", new ArrayList<FuncDefNode>(List.of(
+                    new FuncDefNode(new FuncDefToken("out_string"), new FuncDefToken("SELF_TYPE"), null, null),
+                    new FuncDefNode(new FuncDefToken("out_int"), new FuncDefToken("SELF_TYPE"), null, null),
+                    new FuncDefNode(new FuncDefToken("in_string"), new FuncDefToken("String"), null, null),
+                    new FuncDefNode(new FuncDefToken("in_int"), new FuncDefToken("Int"), null, null)
+            )));
+
+            // Int
+            SymbolTable.classesAndMethods.put("Int", new ArrayList<FuncDefNode>());
+
+            // String
+            SymbolTable.classesAndMethods.put("String", new ArrayList<FuncDefNode>(List.of(
+                    new FuncDefNode(new FuncDefToken("length"), new FuncDefToken("Int"), null, null),
+                    new FuncDefNode(new FuncDefToken("concat"), new FuncDefToken("String"), null, null),
+                    new FuncDefNode(new FuncDefToken("substr"), new FuncDefToken("String"), null, null)
+            )));
+
+            // Bool
+            SymbolTable.classesAndMethods.put("Bool", new ArrayList<FuncDefNode>());
 
             // add inherited methods from super class
             for (var entry : SymbolTable.classesAndParents.entrySet()) {
@@ -149,11 +214,34 @@ public class Compiler {
                         methods.addAll(inheritedMethods);
                         SymbolTable.classesAndMethods.put(className, methods);
                     }
+                } else {
+                    if (!className.equals(TypeSymbol.OBJECT.getName())) {
+                        SymbolTable.classesAndParents.put(className, TypeSymbol.OBJECT.getName());
+                    }
                 }
             }
 
-            SymbolTable.classesAndParents.put("IO", null);
+            int index = 2;
+            for (var entry : SymbolTable.classesAndParents.entrySet()) {
+                Constants.classesAndIndexes.put(entry.getKey(), index++);
+                var inheritedMethods = SymbolTable.findInheritedMethods(entry.getKey());
+                var methods = SymbolTable.classesAndMethods.get(entry.getKey());
 
+                if (inheritedMethods != null) {
+                    methods.addAll(inheritedMethods);
+                    SymbolTable.classesAndMethods.put(entry.getKey(), methods);
+                }
+            }
+
+            Constants.classesAndIndexes.put(TypeSymbol.INT.getName(), index++);
+            Constants.classesAndIndexes.put(TypeSymbol.STRING.getName(), index++);
+            Constants.classesAndIndexes.put(TypeSymbol.BOOL.getName(), index++);
+
+            // System.out.println(Constants.classesAndIndexes);
+
+            for (var entry : SymbolTable.classesAndMethods.entrySet()) {
+                System.out.println(entry.getKey() + " " + SymbolTable.classesAndMethods.get(entry.getKey()));
+            }
 
             ast.accept(resolutionPassVisitor);
 
@@ -164,6 +252,14 @@ public class Compiler {
             SymbolTable.classesAndMethods.clear();
             SymbolTable.classesAndVariables.clear();
             SymbolTable.classesAndParents.clear();
+
+            /*
+            System.out.println(Constants.stringValues);
+            System.out.println(Constants.intValues);
+             */
+
+            Constants.stringValues.clear();
+            Constants.intValues.clear();
 
             if (SymbolTable.hasSemanticErrors()) {
                 System.err.println("Compilation halted");

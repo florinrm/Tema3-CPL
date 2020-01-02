@@ -2,6 +2,8 @@ package cool.structures;
 
 import cool.compiler.*;
 
+import java.util.ArrayList;
+
 public class FindTypesVisitor implements Visitor<Void> {
     private Scope currentScope = null;
 
@@ -110,6 +112,8 @@ public class FindTypesVisitor implements Visitor<Void> {
         } else {
             SymbolTable.classesAndParents.put(classNode.getName().getText(), null);
         }
+
+        SymbolTable.classesAndMethods.put(classNode.getName().getText(), new ArrayList<FuncDefNode>());
 
         currentScope = currentScope.getParent();
         return null;

@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.Token;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SymbolTable {
@@ -164,6 +165,44 @@ public class SymbolTable {
             }
         }
         return baseClass;
+    }
+
+    public static ArrayList<FuncDefNode> findInheritedMethods(String className) {
+        for (var entry : classesAndMethods.entrySet()) {
+            if (entry.getKey().equals(className)) {
+                String parent = classesAndParents.get(className);
+
+                if (parent == null) {
+                    return entry.getValue();
+                }
+
+                var list = new ArrayList<FuncDefNode>();
+                var aux = findInheritedMethods(parent);
+                if (aux != null) {
+                    list.addAll(aux);
+                }
+                return list;
+            }
+        }
+
+        return null;
+    }
+
+    public static List<String> getChildClasses(String className) {
+        List<String> result = new ArrayList<>();
+        for (var entry : classesAndParents.entrySet()) {
+            if (entry.getValue().equals(className)) {
+                result.add(entry.getKey());
+            }
+        }
+        return result;
+    }
+
+    // TODO: DFS for classes ierarchy
+
+    // TODO: method for finding origin class of a method
+    public static String findOriginClassOfMethod(String method) {
+        return null;
     }
 
 }

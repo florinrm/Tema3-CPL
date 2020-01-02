@@ -4,7 +4,6 @@ import cool.compiler.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 public class DefinitionPassVisitor implements Visitor<Void> {
     private Scope currentScope = null;
@@ -180,13 +179,9 @@ public class DefinitionPassVisitor implements Visitor<Void> {
 
         String className = currentScope.toString();
 
-        if (!SymbolTable.classesAndMethods.containsKey(className)) {
-            SymbolTable.classesAndMethods.put(className, new ArrayList<FuncDefNode>(Collections.singletonList(func)));
-        } else {
-            var list = SymbolTable.classesAndMethods.get(className);
-            list.add(func);
-            SymbolTable.classesAndMethods.put(className, list);
-        }
+        var list = SymbolTable.classesAndMethods.get(className);
+        list.add(func);
+        SymbolTable.classesAndMethods.put(className, list);
 
         FunctionSymbol functionSymbol = new FunctionSymbol(currentScope, id.getText());
         currentScope = functionSymbol;

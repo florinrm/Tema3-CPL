@@ -61,11 +61,19 @@ public class FuncDefNode extends Definition {
 
     @Override
     public String toString() {
-        return "FuncDefNode{" +
-                "nameToken=" + nameToken.getText() +
-                ", retTypeToken=" + retTypeToken.getText() +
-                ", body=" + body.getToken().getText() +
-                ", params=" + params +
-                '}';
+        if (body != null) {
+            return "FuncDefNode{" +
+                    "nameToken=" + nameToken.getText() +
+                    ", retTypeToken=" + retTypeToken.getText() +
+                    ", body=" + body.getToken().getText() +
+                    ", params=" + params +
+                    '}';
+        } else {
+            return "FuncDefNode{" +
+                    "nameToken=" + nameToken.getText() +
+                    ", retTypeToken=" + retTypeToken.getText() +
+                    ", params=" + params +
+                    '}';
+        }
     }
 }

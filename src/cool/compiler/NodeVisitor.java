@@ -2,11 +2,28 @@ package cool.compiler;
 
 public class NodeVisitor implements Visitor<Void> {
     private int indent = 0;
+    private boolean print = true;
+    private boolean addStrings = false;
+    private boolean addIntegers = false;
+
+    public void setPrint(boolean print) {
+        this.print = print;
+    }
+
+    public void setAddStrings(boolean addStrings) {
+        this.addStrings = addStrings;
+    }
+
+    public void setAddIntegers(boolean addIntegers) {
+        this.addIntegers = addIntegers;
+    }
 
     private void printIndent(String str) {
-        for (int i = 0; i < indent; i++)
-            System.out.print("  ");
-        System.out.println(str);
+        if (print) {
+            for (int i = 0; i < indent; i++)
+                System.out.print("  ");
+            System.out.println(str);
+        }
     }
 
     @Override
@@ -18,6 +35,9 @@ public class NodeVisitor implements Visitor<Void> {
     @Override
     public Void visit(Int intt) {
         printIndent(intt.getToken().getText());
+        if (addIntegers) {
+            Constants.addInteger(Integer.parseInt(intt.token.getText()));
+        }
         return null;
     }
 
@@ -207,6 +227,11 @@ public class NodeVisitor implements Visitor<Void> {
             toPrint = toPrint.replace("\\", "");
         }
         printIndent(toPrint);
+
+        if (addStrings) {
+            Constants.addString(toPrint);
+        }
+
         return null;
     }
 
