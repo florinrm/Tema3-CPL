@@ -106,13 +106,6 @@ str_const12:
     .word   int_const4
     .asciiz "Main"
     .align  2
-str_const13:
-    .word   10
-    .word   5
-    .word   String_dispTab
-    .word   int_const3
-    .asciiz "abc"
-    .align  2
 int_const0:
     .word   9
     .word   4
@@ -143,11 +136,6 @@ int_const5:
     .word   4
     .word   Int_dispTab
     .word   1
-int_const6:
-    .word   9
-    .word   4
-    .word   Int_dispTab
-    .word   100
 bool_const0:
     .word   11
     .word   4
@@ -210,37 +198,37 @@ IO_protObj:
 
 A_protObj:
     .word   2
-    .word   5
+    .word   3
     .word   A_dispTab
 
 B_protObj:
     .word   3
-    .word   7
+    .word   3
     .word   B_dispTab
 
 C_protObj:
     .word   4
-    .word   7
+    .word   3
     .word   C_dispTab
 
 D_protObj:
     .word   5
-    .word   7
+    .word   3
     .word   D_dispTab
 
 E_protObj:
     .word   6
-    .word   7
+    .word   3
     .word   E_dispTab
 
 F_protObj:
     .word   7
-    .word   7
+    .word   3
     .word   F_dispTab
 
 Main_protObj:
     .word   8
-    .word   9
+    .word   3
     .word   Main_dispTab
 
 Int_protObj:
@@ -284,50 +272,37 @@ IO_dispTab:
     .word Object.copy
 
 A_dispTab:
-    .word A.f
     .word Object.abort
     .word Object.type_name
     .word Object.copy
 
 B_dispTab:
-    .word B.g
-    .word A.f
     .word Object.abort
     .word Object.type_name
     .word Object.copy
 
 C_dispTab:
-    .word C.f
-    .word C.h
     .word Object.abort
     .word Object.type_name
     .word Object.copy
 
 D_dispTab:
-    .word B.g
-    .word A.f
     .word Object.abort
     .word Object.type_name
     .word Object.copy
 
 E_dispTab:
-    .word B.g
-    .word A.f
     .word Object.abort
     .word Object.type_name
     .word Object.copy
 
 F_dispTab:
-    .word C.f
-    .word C.h
     .word Object.abort
     .word Object.type_name
     .word Object.copy
 
 Main_dispTab:
     .word Main.main
-    .word B.g
-    .word A.f
     .word Object.abort
     .word Object.type_name
     .word Object.copy

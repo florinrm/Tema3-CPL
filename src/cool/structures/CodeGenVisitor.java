@@ -149,40 +149,45 @@ public class CodeGenVisitor implements Visitor<ST> {
                 prototype.add("size", size);
                 prototype.add("disp", name + "_dispTab");
             } else {
-                size += SymbolTable.classesAndAttributes.get(name).size();
+                var attrs = SymbolTable.classesAndAttributes.get(name);
+
+                if (attrs != null) {
+                    size += SymbolTable.classesAndAttributes.get(name).size();
+                }
                 prototype.add("label", name + "_protObj");
                 prototype.add("index", index);
                 prototype.add("disp", name + "_dispTab");
 
-                var attrs = SymbolTable.classesAndAttributes.get(name);
-                size += attrs.size();
                 prototype.add("size", size);
 
-                List<String> consts = new ArrayList<>();
-                for (var attr : attrs) {
-                    if (attr.getInitExpr() == null) {
-                        if (attr.getTypeToken().getText().equals(TypeSymbol.INT.getName())) {
-                            consts.add(Constants.intValues.get(0));
-                        } else if (attr.getTypeToken().getText().equals(TypeSymbol.STRING.getName())) {
-                            consts.add(Constants.stringValues.get(""));
-                        } else if (attr.getTypeToken().getText().equals(TypeSymbol.BOOL.getName())) {
-                            consts.add(Constants.boolValues.get(0));
-                        }
-                    } else {
-                        var value = attr.getInitExpr().getToken().getText();
-                        if (attr.getTypeToken().getText().equals(TypeSymbol.INT.getName())) {
-                            int val = Integer.parseInt(value);
-                            consts.add(Constants.intValues.get(val));
-                        } else if (attr.getTypeToken().getText().equals(TypeSymbol.STRING.getName())) {
-                            consts.add(Constants.stringValues.get(value));
-                        } else if (attr.getTypeToken().getText().equals(TypeSymbol.BOOL.getName())) {
-                            if (value.equals("true")) {
-                                consts.add(Constants.boolValues.get(1));
-                            } else {
+                if (attrs != null) {
+                    List<String> consts = new ArrayList<>();
+                    for (var attr : attrs) {
+                        if (attr.getInitExpr() == null) {
+                            if (attr.getTypeToken().getText().equals(TypeSymbol.INT.getName())) {
+                                consts.add(Constants.intValues.get(0));
+                            } else if (attr.getTypeToken().getText().equals(TypeSymbol.STRING.getName())) {
+                                consts.add(Constants.stringValues.get(""));
+                            } else if (attr.getTypeToken().getText().equals(TypeSymbol.BOOL.getName())) {
                                 consts.add(Constants.boolValues.get(0));
+                            }
+                        } else {
+                            var value = attr.getInitExpr().getToken().getText();
+                            if (attr.getTypeToken().getText().equals(TypeSymbol.INT.getName())) {
+                                int val = Integer.parseInt(value);
+                                consts.add(Constants.intValues.get(val));
+                            } else if (attr.getTypeToken().getText().equals(TypeSymbol.STRING.getName())) {
+                                consts.add(Constants.stringValues.get(value));
+                            } else if (attr.getTypeToken().getText().equals(TypeSymbol.BOOL.getName())) {
+                                if (value.equals("true")) {
+                                    consts.add(Constants.boolValues.get(1));
+                                } else {
+                                    consts.add(Constants.boolValues.get(0));
+                                }
                             }
                         }
                     }
+                    prototype.add("args", consts);
                 }
             }
 
