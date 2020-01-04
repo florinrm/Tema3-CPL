@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 
@@ -138,7 +139,6 @@ public class Compiler {
 
             // indexes
             Constants.classesAndIndexes.put("Object", 0);
-            Constants.classesAndIndexes.put("IO", 1);
 
             var findTypesVisitor = new FindTypesVisitor();
             ast.accept(findTypesVisitor);
@@ -221,15 +221,64 @@ public class Compiler {
                 }
             }
 
-            int index = 2;
-            for (var entry : SymbolTable.classesAndParents.entrySet()) {
-                Constants.classesAndIndexes.put(entry.getKey(), index++);
-                var inheritedMethods = SymbolTable.findInheritedMethods(entry.getKey());
-                var methods = SymbolTable.classesAndMethods.get(entry.getKey());
+            // delete duplicated methods from classes (overriden methods)
+            for (var entry : SymbolTable.classesAndMethods.entrySet()) {
+                var methods = entry.getValue();
+                ArrayList<FuncDefNode> temp = new ArrayList<>();
+                for (var method : methods) {
+                    int count = SymbolTable.countsMethodInClass(temp, method.getNameToken().getText());
+                    if (count < 1) {
+                        temp.add(method);
+                    }
+                }
+                SymbolTable.classesAndMethods.put(entry.getKey(), temp);
+            }
 
-                if (inheritedMethods != null) {
-                    methods.addAll(inheritedMethods);
-                    SymbolTable.classesAndMethods.put(entry.getKey(), methods);
+            // add inherited attributes from super class
+            for (var entry : SymbolTable.classesAndParents.entrySet()) {
+                var className = entry.getKey();
+                var parent = entry.getValue();
+                if (!className.equals("Int") && !className.equals("String") && !className.equals("Bool")
+                        && !className.equals("IO") && !parent.equals("Object")) {
+                    if (!parent.equals("Object") && !parent.equals("IO")) {
+                        var inheritedAttributes = SymbolTable.classesAndAttributes.get(parent);
+                        if (inheritedAttributes != null) {
+                            var variables = SymbolTable.classesAndAttributes.get(className);
+                            if (variables == null) {
+                                variables = new LinkedHashSet<>();
+                            }
+                            variables.addAll(inheritedAttributes);
+                            SymbolTable.classesAndAttributes.put(className, variables);
+                        }
+                    } else {
+                        if (!className.equals(TypeSymbol.OBJECT.getName())) {
+                            SymbolTable.classesAndParents.put(className, TypeSymbol.OBJECT.getName());
+                        }
+                    }
+                }
+            }
+
+
+            int index = 1;
+            // System.out.println("CE PPLM " + SymbolTable.classesAndParents);
+            for (var entry : SymbolTable.classesAndParents.entrySet()) {
+                if (!entry.getKey().equals("Int") && !entry.getKey().equals("String")
+                        && !entry.getKey().equals("Bool")) {
+                    Constants.classesAndIndexes.put(entry.getKey(), index++);
+                    var inheritedMethods = SymbolTable.findInheritedMethods(entry.getKey());
+                    var inheritedAttributes = SymbolTable.findInheritedAttributes(entry.getKey());
+                    var methods = SymbolTable.classesAndMethods.get(entry.getKey());
+                    var attrs = SymbolTable.classesAndAttributes.get(entry.getKey());
+
+                    if (inheritedMethods != null) {
+                        methods.addAll(inheritedMethods);
+                        SymbolTable.classesAndMethods.put(entry.getKey(), methods);
+                    }
+
+                    if (inheritedAttributes != null) {
+                        attrs.addAll(inheritedAttributes);
+                        SymbolTable.classesAndAttributes.put(entry.getKey(), attrs);
+                    }
                 }
             }
 
@@ -238,10 +287,17 @@ public class Compiler {
             Constants.classesAndIndexes.put(TypeSymbol.BOOL.getName(), index++);
 
             // System.out.println(Constants.classesAndIndexes);
+            // System.out.println(Constants.classesAndIndexes);
 
             for (var entry : SymbolTable.classesAndMethods.entrySet()) {
                 System.out.println(entry.getKey() + " " + SymbolTable.classesAndMethods.get(entry.getKey()));
             }
+
+            /*
+            for (var entry : SymbolTable.classesAndAttributes.entrySet()) {
+                System.out.println(entry.getKey() + " " + entry.getValue());
+            }
+             */
 
             ast.accept(resolutionPassVisitor);
 

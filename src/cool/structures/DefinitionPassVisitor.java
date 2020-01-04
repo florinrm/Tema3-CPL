@@ -4,6 +4,7 @@ import cool.compiler.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 
 public class DefinitionPassVisitor implements Visitor<Void> {
     private Scope currentScope = null;
@@ -220,13 +221,24 @@ public class DefinitionPassVisitor implements Visitor<Void> {
             // list of classes and their attributes
             String className = currentScope.toString();
             if (!SymbolTable.classesAndVariables.containsKey(className)) {
+                VarDef copy = new VarDef(var);
+
                 Pair<String, String> pair = new Pair<>(var.getNameToken().getText(), var.getTypeToken().getText());
                 ArrayList<Pair<String, String>> list = new ArrayList<>(Arrays.asList(pair));
                 SymbolTable.classesAndVariables.put(className, list);
+
+                LinkedHashSet<VarDef> list2 = new LinkedHashSet<>(Arrays.asList(var));
+                SymbolTable.classesAndAttributes.put(className, list2);
             } else {
+                VarDef copy = new VarDef(var);
+
                 ArrayList<Pair<String, String>> list = SymbolTable.classesAndVariables.get(className);
                 list.add(new Pair<>(var.getNameToken().getText(), var.getTypeToken().getText()));
                 SymbolTable.classesAndVariables.put(className, list);
+
+                LinkedHashSet<VarDef> list2 = SymbolTable.classesAndAttributes.get(className);
+                list2.add(var);
+                SymbolTable.classesAndAttributes.put(className, list2);
             }
 
             // variable mustn't have self as name

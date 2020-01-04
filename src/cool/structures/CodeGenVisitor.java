@@ -116,6 +116,96 @@ public class CodeGenVisitor implements Visitor<ST> {
 
         // TODO: _protOb and _dispTab for each class
 
+        // prototypes
+        for (var entry : Constants.classesAndIndexes.entrySet()) {
+            var name = entry.getKey();
+            var index = entry.getValue();
+            List<String> values = new ArrayList<>();
+            var prototype = templates.getInstanceOf("protObj");
+            int size = 3;
+            if (name.equals(TypeSymbol.INT.getName()) || name.equals(TypeSymbol.BOOL.getName())) {
+                size++;
+                prototype.add("label", name + "_protObj");
+                prototype.add("index", index);
+                prototype.add("size", size);
+                prototype.add("disp", name + "_dispTab");
+
+                List<Integer> args = new ArrayList<>();
+                args.add(0);
+                prototype.add("args", args);
+            } else if (name.equals(TypeSymbol.STRING.getName())) {
+                size += 2;
+                prototype.add("label", name + "_protObj");
+                prototype.add("index", index);
+                prototype.add("size", size);
+                prototype.add("disp", name + "_dispTab");
+                List<String> args = new ArrayList<>();
+                args.add(Constants.intValues.get(0));
+                prototype.add("args", args);
+                prototype.add("str", args);
+            } else if (name.equals("IO") || name.equals("Object")) {
+                prototype.add("label", name + "_protObj");
+                prototype.add("index", index);
+                prototype.add("size", size);
+                prototype.add("disp", name + "_dispTab");
+            } else {
+                size += SymbolTable.classesAndAttributes.get(name).size();
+                prototype.add("label", name + "_protObj");
+                prototype.add("index", index);
+                prototype.add("disp", name + "_dispTab");
+
+                var attrs = SymbolTable.classesAndAttributes.get(name);
+                size += attrs.size();
+                prototype.add("size", size);
+
+                List<String> consts = new ArrayList<>();
+                for (var attr : attrs) {
+                    if (attr.getInitExpr() == null) {
+                        if (attr.getTypeToken().getText().equals(TypeSymbol.INT.getName())) {
+                            consts.add(Constants.intValues.get(0));
+                        } else if (attr.getTypeToken().getText().equals(TypeSymbol.STRING.getName())) {
+                            consts.add(Constants.stringValues.get(""));
+                        } else if (attr.getTypeToken().getText().equals(TypeSymbol.BOOL.getName())) {
+                            consts.add(Constants.boolValues.get(0));
+                        }
+                    } else {
+                        var value = attr.getInitExpr().getToken().getText();
+                        if (attr.getTypeToken().getText().equals(TypeSymbol.INT.getName())) {
+                            int val = Integer.parseInt(value);
+                            consts.add(Constants.intValues.get(val));
+                        } else if (attr.getTypeToken().getText().equals(TypeSymbol.STRING.getName())) {
+                            consts.add(Constants.stringValues.get(value));
+                        } else if (attr.getTypeToken().getText().equals(TypeSymbol.BOOL.getName())) {
+                            if (value.equals("true")) {
+                                consts.add(Constants.boolValues.get(1));
+                            } else {
+                                consts.add(Constants.boolValues.get(0));
+                            }
+                        }
+                    }
+                }
+            }
+
+            dataSection.add("e", prototype);
+        }
+
+        // dispTabs
+        for (var entry : Constants.classesAndIndexes.entrySet()) {
+            var className = entry.getKey();
+            var methods = SymbolTable.classesAndMethods.get(className);
+            var prototype = templates.getInstanceOf("dispTab");
+            prototype.add("label", className + "_dispTab");
+            List<String> args = new ArrayList<>();
+            for (var method : methods) {
+                String str = SymbolTable.findOriginClassOfMethod(className, method)
+                        + "." + method.getNameToken().getText();
+                args.add(str);
+                // System.out.println(str);
+            }
+            prototype.add("args", args);
+            dataSection.add("e", prototype);
+        }
+
         // init predefined classes
         mainSection.add("e", visitPredefinedClass(TypeSymbol.OBJECT.getName()));
         mainSection.add("e", visitPredefinedClass("IO"));

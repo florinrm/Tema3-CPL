@@ -2,21 +2,20 @@ package cool.structures;
 
 import cool.compiler.Compiler;
 import cool.compiler.FuncDefNode;
+import cool.compiler.VarDef;
 import cool.parser.CoolParser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SymbolTable {
     public static Scope globals;
 
     public static Map<String, String> classesAndParents = new LinkedHashMap<>();
     public static Map<String, ArrayList<Pair<String, String>>> classesAndVariables = new LinkedHashMap<>();
+    public static Map<String, LinkedHashSet<VarDef>> classesAndAttributes = new LinkedHashMap<>();
     public static Map<String, ArrayList<FuncDefNode>> classesAndMethods = new LinkedHashMap<>();
 
     public final static String ID = "Id";
@@ -167,6 +166,16 @@ public class SymbolTable {
         return baseClass;
     }
 
+    public static int countsMethodInClass(List<FuncDefNode> functions, String f) {
+        int count = 0;
+        for (var func : functions) {
+            if (f.equals(func.getNameToken().getText())) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     public static ArrayList<FuncDefNode> findInheritedMethods(String className) {
         for (var entry : classesAndMethods.entrySet()) {
             if (entry.getKey().equals(className)) {
@@ -175,9 +184,28 @@ public class SymbolTable {
                 if (parent == null) {
                     return entry.getValue();
                 }
-
                 var list = new ArrayList<FuncDefNode>();
                 var aux = findInheritedMethods(parent);
+                if (aux != null) {
+                    list.addAll(aux);
+                }
+                return list;
+            }
+        }
+
+        return null;
+    }
+
+    public static LinkedHashSet<VarDef> findInheritedAttributes(String className) {
+        for (var entry : classesAndAttributes.entrySet()) {
+            if (entry.getKey().equals(className)) {
+                String parent = classesAndParents.get(className);
+
+                if (parent == null || parent.equals("Object") || parent.equals("IO")) {
+                    return entry.getValue();
+                }
+                var list = new LinkedHashSet<VarDef>();
+                var aux = findInheritedAttributes(parent);
                 if (aux != null) {
                     list.addAll(aux);
                 }
@@ -201,7 +229,39 @@ public class SymbolTable {
     // TODO: DFS for classes ierarchy
 
     // TODO: method for finding origin class of a method
-    public static String findOriginClassOfMethod(String method) {
+    public static String findOriginClassOfMethod(String className, FuncDefNode method) {
+        var methods = classesAndMethods.get(className);
+        if (methods != null) {
+            if (methods.contains(method)) {
+                String parentClass = classesAndParents.get(className);
+                if (parentClass != null) {
+                    var inheritedMethods = classesAndMethods.get(parentClass);
+                    if (!inheritedMethods.contains(method)) {
+                        return className;
+                    } else {
+                        if (parentClass.equals("Object")) {
+                            return parentClass;
+                        } else {
+                            return findOriginClassOfMethod(parentClass, method);
+                        }
+                    }
+                }
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+
+        if (className.equals("Object")) {
+            var funcName = method.getNameToken().getText();
+            for (var func : methods) {
+                if (func.getNameToken().getText().equals(funcName)) {
+                    return className;
+                }
+            }
+        }
+
         return null;
     }
 

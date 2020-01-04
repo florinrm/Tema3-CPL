@@ -2,6 +2,8 @@ package cool.compiler;
 
 import org.antlr.v4.runtime.Token;
 
+import java.util.Objects;
+
 public class VarDef extends Definition {
     private Token nameToken;
     private Token typeToken;
@@ -17,6 +19,10 @@ public class VarDef extends Definition {
         super(start);
         nameToken = name;
         typeToken = type;
+    }
+
+    public VarDef(VarDef var) {
+        this(var.nameToken, var.typeToken, var.initExpr, var.token);
     }
 
     public Token getNameToken() {
@@ -54,5 +60,38 @@ public class VarDef extends Definition {
     @Override
     public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public String toString() {
+        if (initExpr != null) {
+            return "VarDef{" +
+                    "nameToken=" + nameToken +
+                    ", typeToken=" + typeToken +
+                    ", initExpr=" + initExpr +
+                    ", type='" + type + '\'' +
+                    '}';
+        }
+        return "VarDef{" +
+                "nameToken=" + nameToken +
+                ", typeToken=" + typeToken +
+                ", type='" + type + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof VarDef)) return false;
+        VarDef varDef = (VarDef) o;
+        return Objects.equals(nameToken, varDef.nameToken) &&
+                Objects.equals(typeToken, varDef.typeToken) &&
+                Objects.equals(initExpr, varDef.initExpr) &&
+                Objects.equals(type, varDef.type);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nameToken, typeToken, initExpr, type);
     }
 }

@@ -84,6 +84,30 @@ class_objTab:
 }>
 >>
 
+protObj(label, index, size, disp, args, str) ::= <<
+<label>:
+    .word   <index>
+    .word   <size>
+    .word   <disp>
+<args :
+    {tag |
+    .word   <tag>
+}>
+    <if (str)>
+    .asciiz ""
+    .align  2
+    <else>
+    <endif>
+>>
+
+dispTab(label, args) ::= <<
+<label>:
+<args :
+    {tag |
+    .word <tag>
+}>
+>>
+
 class(class_label, super_class) ::= <<
 <class_label>:
     addiu   $sp $sp -12

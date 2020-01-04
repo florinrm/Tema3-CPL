@@ -3,6 +3,7 @@ package cool.compiler;
 import org.antlr.v4.runtime.Token;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class FuncDefNode extends Definition {
     private Token nameToken;
@@ -75,5 +76,21 @@ public class FuncDefNode extends Definition {
                     ", params=" + params +
                     '}';
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof FuncDefNode)) return false;
+        FuncDefNode that = (FuncDefNode) o;
+        return Objects.equals(nameToken, that.nameToken) &&
+                Objects.equals(retTypeToken, that.retTypeToken) &&
+                Objects.equals(body, that.body) &&
+                Objects.equals(params, that.params);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nameToken, retTypeToken, body, params);
     }
 }
