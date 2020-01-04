@@ -108,7 +108,7 @@ dispTab(label, args) ::= <<
 }>
 >>
 
-class(class_label, super_class) ::= <<
+class(class_label, super_class, methods) ::= <<
 <class_label>:
     addiu   $sp $sp -12
     sw      $fp 12($sp)
@@ -121,6 +121,26 @@ class(class_label, super_class) ::= <<
     <else>
     <endif>
     move    $a0 $s0
+    lw      $fp 12($sp)
+    lw      $s0 8($sp)
+    lw      $ra 4($sp)
+    addiu   $sp $sp 12
+    jr      $ra
+<methods :
+    {method |
+<method>
+}>
+>>
+
+method(method_name, args) ::= <<
+<method_name>:
+    addiu   $sp $sp -12
+    sw      $fp 12($sp)
+    sw      $s0 8($sp)
+    sw      $ra 4($sp)
+    addiu   $fp $sp 4
+    move    $s0 $a0
+    la      $a0 int_const5
     lw      $fp 12($sp)
     lw      $s0 8($sp)
     lw      $ra 4($sp)

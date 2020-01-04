@@ -9,6 +9,7 @@ import java.util.List;
 
 public class CodeGenVisitor implements Visitor<ST> {
     private static STGroupFile templates = new STGroupFile("cool/structures/CodeTemplate.stg");
+    private Scope currentScope = null;
 
     static int relationalLabelIndex = 0;
     static int ifLabelIndex = 0;
@@ -43,6 +44,7 @@ public class CodeGenVisitor implements Visitor<ST> {
 
     @Override
     public ST visit(Program prog) {
+        currentScope = new DefaultScope(null);
         dataSection = templates.getInstanceOf("sequence");
         funcSection = templates.getInstanceOf("sequenceSpaced");
         mainSection = templates.getInstanceOf("sequence");
@@ -218,9 +220,9 @@ public class CodeGenVisitor implements Visitor<ST> {
         mainSection.add("e", visitPredefinedClass(TypeSymbol.STRING.getName()));
         mainSection.add("e", visitPredefinedClass(TypeSymbol.BOOL.getName()));
 
-        for (var statement : prog.getClasses())
+        for (var statement : prog.getClasses()) {
             mainSection.add("e", statement.accept(this));
-
+        }
         //assembly-ing it all together. HA! get it?
         var programST = templates.getInstanceOf("program");
         programST.add("data", dataSection);
@@ -257,7 +259,9 @@ public class CodeGenVisitor implements Visitor<ST> {
 
     @Override
     public ST visit(FuncDefNode func) {
-        return null;
+        var funcTemplate = templates.getInstanceOf("method");
+        funcTemplate.add("method_name", currentScope.toString() + "." + func.getNameToken().getText());
+        return funcTemplate;
     }
 
     @Override
@@ -297,6 +301,17 @@ public class CodeGenVisitor implements Visitor<ST> {
         } else {
             st.add("super_class", classNode.getParent().getText() + "_init");
         }
+
+        currentScope = new ClassSymbol(currentScope, classNode.getName().getText());
+        List<ST> methods = new ArrayList<>();
+        for (var def : classNode.getDefinitions()) {
+            var temp = def.accept(this);
+            if (temp != null) {
+                methods.add(temp);
+            }
+        }
+        st.add("methods", methods);
+        currentScope = currentScope.getParent();
 
         return st;
     }
