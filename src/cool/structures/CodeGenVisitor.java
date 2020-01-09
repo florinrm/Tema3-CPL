@@ -25,7 +25,10 @@ public class CodeGenVisitor implements Visitor<ST> {
 
     @Override
     public ST visit(Int intt) {
-        return null;
+        var template = templates.getInstanceOf("literal");
+        var label = Constants.intValues.get(Integer.parseInt(intt.getToken().getText()));
+        template.add("val", label);
+        return template;
     }
 
     @Override
@@ -261,6 +264,7 @@ public class CodeGenVisitor implements Visitor<ST> {
     public ST visit(FuncDefNode func) {
         var funcTemplate = templates.getInstanceOf("method");
         funcTemplate.add("method_name", currentScope.toString() + "." + func.getNameToken().getText());
+        funcTemplate.add("body", func.getBody().accept(this));
         return funcTemplate;
     }
 

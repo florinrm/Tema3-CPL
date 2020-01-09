@@ -6,7 +6,9 @@ import cool.structures.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -289,9 +291,12 @@ public class Compiler {
             // System.out.println(Constants.classesAndIndexes);
             // System.out.println(Constants.classesAndIndexes);
 
+            /*
             for (var entry : SymbolTable.classesAndMethods.entrySet()) {
                 System.out.println(entry.getKey() + " " + SymbolTable.classesAndMethods.get(entry.getKey()));
             }
+
+             */
 
             /*
             for (var entry : SymbolTable.classesAndAttributes.entrySet()) {
@@ -304,6 +309,12 @@ public class Compiler {
             var codeGenVisitor = new CodeGenVisitor();
             var codeGen = ast.accept(codeGenVisitor);
             System.out.println(codeGen.render());
+
+            System.out.println(fileName);
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(fileName.replace(".cl", ".s")));
+            writer.write(codeGen.render());
+            writer.close();
 
             SymbolTable.classesAndMethods.clear();
             SymbolTable.classesAndVariables.clear();

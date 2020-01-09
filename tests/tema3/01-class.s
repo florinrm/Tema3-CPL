@@ -349,6 +349,7 @@ Object_init:
     lw      $ra 4($sp)
     addiu   $sp $sp 12
     jr      $ra
+
 IO_init:
     addiu   $sp $sp -12
     sw      $fp 12($sp)
@@ -363,6 +364,7 @@ IO_init:
     lw      $ra 4($sp)
     addiu   $sp $sp 12
     jr      $ra
+
 Int_init:
     addiu   $sp $sp -12
     sw      $fp 12($sp)
@@ -377,6 +379,7 @@ Int_init:
     lw      $ra 4($sp)
     addiu   $sp $sp 12
     jr      $ra
+
 String_init:
     addiu   $sp $sp -12
     sw      $fp 12($sp)
@@ -391,6 +394,7 @@ String_init:
     lw      $ra 4($sp)
     addiu   $sp $sp 12
     jr      $ra
+
 Bool_init:
     addiu   $sp $sp -12
     sw      $fp 12($sp)
@@ -405,6 +409,7 @@ Bool_init:
     lw      $ra 4($sp)
     addiu   $sp $sp 12
     jr      $ra
+
 A_init:
     addiu   $sp $sp -12
     sw      $fp 12($sp)
@@ -419,6 +424,7 @@ A_init:
     lw      $ra 4($sp)
     addiu   $sp $sp 12
     jr      $ra
+
 B_init:
     addiu   $sp $sp -12
     sw      $fp 12($sp)
@@ -433,6 +439,7 @@ B_init:
     lw      $ra 4($sp)
     addiu   $sp $sp 12
     jr      $ra
+
 C_init:
     addiu   $sp $sp -12
     sw      $fp 12($sp)
@@ -447,6 +454,7 @@ C_init:
     lw      $ra 4($sp)
     addiu   $sp $sp 12
     jr      $ra
+
 D_init:
     addiu   $sp $sp -12
     sw      $fp 12($sp)
@@ -461,6 +469,7 @@ D_init:
     lw      $ra 4($sp)
     addiu   $sp $sp 12
     jr      $ra
+
 E_init:
     addiu   $sp $sp -12
     sw      $fp 12($sp)
@@ -475,6 +484,7 @@ E_init:
     lw      $ra 4($sp)
     addiu   $sp $sp 12
     jr      $ra
+
 F_init:
     addiu   $sp $sp -12
     sw      $fp 12($sp)
@@ -489,6 +499,7 @@ F_init:
     lw      $ra 4($sp)
     addiu   $sp $sp 12
     jr      $ra
+
 Main_init:
     addiu   $sp $sp -12
     sw      $fp 12($sp)
@@ -498,6 +509,19 @@ Main_init:
     move    $s0 $a0
     jal     E_init
     move    $a0 $s0
+    lw      $fp 12($sp)
+    lw      $s0 8($sp)
+    lw      $ra 4($sp)
+    addiu   $sp $sp 12
+    jr      $ra
+Main.main:
+    addiu   $sp $sp -12
+    sw      $fp 12($sp)
+    sw      $s0 8($sp)
+    sw      $ra 4($sp)
+    addiu   $fp $sp 4
+    move    $s0 $a0
+    la      $a0 int_const0
     lw      $fp 12($sp)
     lw      $s0 8($sp)
     lw      $ra 4($sp)

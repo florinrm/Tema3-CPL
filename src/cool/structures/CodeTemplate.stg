@@ -30,7 +30,7 @@ heap_start:
 >>
 
 literal(val) ::= <<
-	li $a0 <val>
+la      $a0 <val>
 >>
 
 header(val1, val2, val3) ::= <<
@@ -132,7 +132,7 @@ class(class_label, super_class, methods) ::= <<
 }>
 >>
 
-method(method_name, args) ::= <<
+method(method_name, args, body) ::= <<
 <method_name>:
     addiu   $sp $sp -12
     sw      $fp 12($sp)
@@ -140,7 +140,7 @@ method(method_name, args) ::= <<
     sw      $ra 4($sp)
     addiu   $fp $sp 4
     move    $s0 $a0
-    la      $a0 int_const5
+    <body>
     lw      $fp 12($sp)
     lw      $s0 8($sp)
     lw      $ra 4($sp)
