@@ -301,8 +301,8 @@ public class Compiler {
             /*
             for (var entry : SymbolTable.classesAndAttributes.entrySet()) {
                 System.out.println(entry.getKey() + " " + entry.getValue());
-            }
-             */
+            }*/
+
 
             ast.accept(resolutionPassVisitor);
 
@@ -310,7 +310,7 @@ public class Compiler {
             var codeGen = ast.accept(codeGenVisitor);
             System.out.println(codeGen.render());
 
-            System.out.println(fileName);
+            //System.out.println(fileName);
 
             BufferedWriter writer = new BufferedWriter(new FileWriter(fileName.replace(".cl", ".s")));
             writer.write(codeGen.render());

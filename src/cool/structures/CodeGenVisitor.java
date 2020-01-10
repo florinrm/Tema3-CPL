@@ -172,6 +172,7 @@ public class CodeGenVisitor implements Visitor<ST> {
                             if (attr.getTypeToken().getText().equals(TypeSymbol.INT.getName())) {
                                 consts.add(Constants.intValues.get(0));
                             } else if (attr.getTypeToken().getText().equals(TypeSymbol.STRING.getName())) {
+                                // System.out.println("string no attr");
                                 consts.add(Constants.stringValues.get(""));
                             } else if (attr.getTypeToken().getText().equals(TypeSymbol.BOOL.getName())) {
                                 consts.add(Constants.boolValues.get(0));
@@ -182,7 +183,7 @@ public class CodeGenVisitor implements Visitor<ST> {
                                 int val = Integer.parseInt(value);
                                 consts.add(Constants.intValues.get(val));
                             } else if (attr.getTypeToken().getText().equals(TypeSymbol.STRING.getName())) {
-                                consts.add(Constants.stringValues.get(value));
+                                consts.add(Constants.stringValues.get(value.replace("\"", "")));
                             } else if (attr.getTypeToken().getText().equals(TypeSymbol.BOOL.getName())) {
                                 if (value.equals("true")) {
                                     consts.add(Constants.boolValues.get(1));
@@ -247,6 +248,9 @@ public class CodeGenVisitor implements Visitor<ST> {
 
     @Override
     public ST visit(FunctionCall call) {
+        // for abort
+        var name = call.getName().getToken().getText();
+        System.out.println(call.getName().getToken().getText());
         return null;
     }
 
